@@ -1,0 +1,1 @@
+/usr/bin/g++ -g -rdynamic CMakeFiles/FluidSim.dir/src/main.cpp.o CMakeFiles/FluidSim.dir/src/glad.c.o -o FluidSim  -lglfw /usr/local/lib/libglm.a /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so 
