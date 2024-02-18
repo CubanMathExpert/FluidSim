@@ -4,7 +4,7 @@
 #include <chrono>
 #include "glad.h"
 #include <GLFW/glfw3.h>
-#include "glUtils.h"
+#include "gl_utils"
 
 void compileErrorCheck(unsigned int shader);
 void programErrorCheck(unsigned int program);
