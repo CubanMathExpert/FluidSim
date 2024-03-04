@@ -8,10 +8,12 @@ find_package(glm CONFIG REQUIRED)
 include(CTest)
 enable_testing()
 
+include_directories(${CMAKE_SOURCE_DIR}/inc)
+
 add_executable(FluidSim 
     src/main.cpp 
-    src/glad.h 
     src/glad.c
+    src/utils.cpp
 )
 
 target_link_libraries(FluidSim 
