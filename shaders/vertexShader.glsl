@@ -1,7 +1,7 @@
 #version 330 core
-layout (location = 0) in vec3 aPos; // The position variable has attribute position 0
+layout (location = 0) in vec3 aPos;
 
-out vec4 vertexColor; // Specifie a color output to the fragment shader
+out vec4 vertexColor;
 
 void main() {
     gl_position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
