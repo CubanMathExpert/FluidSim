@@ -6,6 +6,18 @@
 #include <GLFW/glfw3.h>
 #include "utils.h"
 
+const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+const char *fragmentShaderSource = "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
 
 int main(int, char**)
 {
@@ -40,22 +52,7 @@ int main(int, char**)
     unsigned int indices[] = {
         0,1,3
     };
-
-    //WTF
-    const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-    const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
-    std::cout << fragmentShaderSource << std::endl;
+    
     // Make shaders
     const char* vertSource = readShaderFile("../shaders/vertexShader.glsl");
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -63,13 +60,21 @@ int main(int, char**)
     glCompileShader(vertexShader);
 
     const char* fragSource = readShaderFile("../shaders/fragmentShader.glsl");
-
-    //std::cout << fragSource << std::endl;
-    std::cout << (strcmp(fragSource, fragmentShaderSource) == 0) << std::endl;
-
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragSource, NULL);
     glCompileShader(fragmentShader);
+
+    // WTF IS GOING ON HERE THESE TWO LOOK IDENTICAL BUT THEY AINT
+    std::cout << fragSource << std::endl;
+    std::cout << fragmentShaderSource << std::endl;
+    if (strcmp(fragSource, fragmentShaderSource) == 0)
+    {
+        std::cout << "these mf are the same" << std::endl;
+    }
+    else
+    {
+        std::cout << "different" << std::endl;
+    }
 
     // Make the program and bind the shaders
     unsigned int shaderProgram = glCreateProgram();
