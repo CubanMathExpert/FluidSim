@@ -65,16 +65,13 @@ int main(int, char**)
     glCompileShader(fragmentShader);
 
     // WTF IS GOING ON HERE THESE TWO LOOK IDENTICAL BUT THEY AINT
-    std::cout << fragSource << std::endl;
-    std::cout << fragmentShaderSource << std::endl;
-    if (strcmp(fragSource, fragmentShaderSource) == 0)
-    {
-        std::cout << "these mf are the same" << std::endl;
-    }
-    else
-    {
-        std::cout << "different" << std::endl;
-    }
+    std::cout << "string from file" << std::endl;
+    printHex(fragSource);
+    std::cout << "string from main" << std::endl;
+    printHex(fragmentShaderSource);
+
+    printChar(fragSource);
+    printChar(fragmentShaderSource);
 
     // Make the program and bind the shaders
     unsigned int shaderProgram = glCreateProgram();

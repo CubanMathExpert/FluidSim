@@ -13,7 +13,7 @@ const char* readShaderFile(std::string filePath)
     // If file opens append lines and \n in result (while getline will iterate over the lines of the file)
     else
     {
-        std::cout << "SUCCESS::CREATING::FILE" << std::endl;
+        //std::cout << "SUCCESS::CREATING::FILE" << std::endl;
         std::string result = "";
         std::string line;
         while (getline(file, line))
@@ -46,6 +46,21 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
+void printHex(const char* str)
+{
+    for (size_t i = 0; str[i] != '\0'; ++i)
+    {
+        printf("%02X", (unsigned char)str[i]);
+    }
+    printf("\n");
+}
+void printChar(const char* str)
+{
+    for (int i =0; str[i] != '\0'; ++i)
+    {
+        printf("Character at index %d: %c (ASCII: %d)\n", i, str[i], (int)str[i]);
+    }
+}
 
 
 
