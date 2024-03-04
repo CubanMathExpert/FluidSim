@@ -65,7 +65,7 @@ int main(int, char**)
     const char* fragSource = readShaderFile("../shaders/fragmentShader.glsl");
 
     //std::cout << fragSource << std::endl;
-    //std::cout << fragSource == fragmentShaderSource << std::endl;
+    std::cout << (strcmp(fragSource, fragmentShaderSource) == 0) << std::endl;
 
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragSource, NULL);
