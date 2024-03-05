@@ -1,11 +1,13 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
-
 #include "shader_c.h"
 #include "utils.h"
-
 #include <iostream>
 
+// there is more but most of the useful stuff in here
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -22,7 +24,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FluidSim", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FLuidSim", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -87,8 +89,18 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // create transforms
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::scale(transform, glm::vec3(glm::sin((float)glfwGetTime()), 0.6, 0.6));
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+
         // render the triangle
         ourShader.use();
+
+        // send uniforms to shaders
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
