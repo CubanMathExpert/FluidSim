@@ -7,7 +7,7 @@
 
 // there is more but most of the useful stuff in here
 
-
+const glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
 #define PI 3.141592653589793f
 
 // settings
@@ -59,6 +59,7 @@ int main()
     };
     */
 
+    // particle data
     const float particleRadius = 0.5f;
     const int particleSegments = 20;
     std::vector<float> vertices;
@@ -84,11 +85,22 @@ int main()
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     // glBindVertexArray(0);
 
-
+    float lastFrame = glfwGetTime();
+    glm::vec3 particlePosition(0.0f, 5.0f, 0.0f);
+    glm::vec3 particleVelocity(0.0f); // initial velocity
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+
+        // time and particle movement
+        // -----
+        float currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        particleVelocity += gravity * deltaTime;
+        particlePosition += particleVelocity * deltaTime;
         // input
         // -----
         processInput(window);
@@ -109,7 +121,7 @@ int main()
 
         // view matrix
         glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f)); // translate the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -40.0f)); // translate the scene in the reverse direction of where we want to move
 
         // projection matrix
         glm::mat4 projection = glm::mat4(1.0f);
@@ -121,23 +133,19 @@ int main()
 
         ourShader.use();
 
+        glBindVertexArray(VAO);
+
         // send uniforms to vertex shader-------------------------------------------------
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-        unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        unsigned viewLoc = glGetUniformLocation(ourShader.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-        unsigned projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particlePosition[0]);
         //---------------------------------------------------------------------------
 
  
-        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
+        
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

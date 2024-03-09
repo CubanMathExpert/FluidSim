@@ -24,7 +24,6 @@ void generateCircleVertices(float radius, int segments, std::vector<float>& vert
         vertices.push_back(y);
         vertices.push_back(0.0f);
     }
-    
 }
 
 
