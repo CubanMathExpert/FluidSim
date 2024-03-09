@@ -49,15 +49,6 @@ int main()
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    /*
-    float vertices[] = {
-        // positions
-        // triangle        
-         0.5f, -0.5f, 0.0f, 
-        -0.5f, -0.5f, 0.0f,   
-         0.0f,  0.5f, 0.0f 
-    };
-    */
 
     // particle data
     const float particleRadius = 0.5f;
@@ -86,7 +77,7 @@ int main()
     // glBindVertexArray(0);
 
     float lastFrame = glfwGetTime();
-    glm::vec3 particlePosition(0.0f, 5.0f, 0.0f);
+    glm::vec3 particlePosition(0.0f, 3.0f, 0.0f);
     glm::vec3 particleVelocity(0.0f); // initial velocity
     // render loop
     // -----------
@@ -101,6 +92,17 @@ int main()
 
         particleVelocity += gravity * deltaTime;
         particlePosition += particleVelocity * deltaTime;
+
+
+
+        if (particlePosition.x < -0.0f || particlePosition.x > SCR_WIDTH)
+        {
+            particleVelocity.x *= -1.0f; // invert x velo
+        }
+        if (particlePosition.y < -1.0f || particlePosition.y > SCR_HEIGHT)
+        {
+            particleVelocity.y *= -1.0f; // invert x velo
+        }
         // input
         // -----
         processInput(window);
@@ -121,7 +123,7 @@ int main()
 
         // view matrix
         glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -40.0f)); // translate the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -40.f)); // translate the scene in the reverse direction of where we want to move
 
         // projection matrix
         glm::mat4 projection = glm::mat4(1.0f);
