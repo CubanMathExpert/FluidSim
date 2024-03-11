@@ -11,5 +11,5 @@ void main()
 {
     vec3 offsetPosition = aPos + offset;
 
-    gl_Position = projection * view * model * vec4(offsetPosition, 1.0);
+    gl_Position = projection * vec4(offsetPosition, 1.0);
 } 

@@ -17,14 +17,12 @@ const unsigned int SCR_HEIGHT = 600;
 int main()
 {
     // glfw: initialize and configure
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // glfw window creation
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FLuidSim", NULL, NULL);
     if (window == NULL)
     {
@@ -36,7 +34,6 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // glad: load all OpenGL function pointers
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -44,17 +41,15 @@ int main()
     }
 
     // build and compile our shader program
-    // ------------------------------------
     Shader ourShader("../shaders/vertexShader.glsl", "../shaders/fragmentShader.glsl"); // you can name your shader files however you like
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
 
     // particle data
-    const float particleRadius = 0.5f;
+    const float particleRadius = 0.05f;
     const int particleSegments = 20;
     std::vector<float> vertices;
-    generateCircleVertices(particleRadius, particleSegments, vertices);   
+    generateCircleVertices(particleRadius, particleSegments, vertices);
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -77,15 +72,13 @@ int main()
     // glBindVertexArray(0);
 
     float lastFrame = glfwGetTime();
-    glm::vec3 particlePosition(0.0f, 3.0f, 0.0f);
+    glm::vec3 particlePosition(0.0f, 2.9f, 0.0f);
     glm::vec3 particleVelocity(0.0f); // initial velocity
     // render loop
-    // -----------
     while (!glfwWindowShouldClose(window))
     {
 
         // time and particle movement
-        // -----
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -93,75 +86,50 @@ int main()
         particleVelocity += gravity * deltaTime;
         particlePosition += particleVelocity * deltaTime;
 
-
-
         if (particlePosition.x < -0.0f || particlePosition.x > SCR_WIDTH)
         {
             particleVelocity.x *= -1.0f; // invert x velo
         }
-        if (particlePosition.y < -1.0f || particlePosition.y > SCR_HEIGHT)
+        if (particlePosition.y < (-3.0f + particleRadius) || particlePosition.y > (3.0 - particleRadius))
         {
             particleVelocity.y *= -1.0f; // invert x velo
         }
+
         // input
-        // -----
         processInput(window);
 
-        // render
-        // ------
+        // render-----------------------------------------------------------------------
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // create transforms------------------------------------------------------------
-        glm::mat4 transform = glm::mat4(1.0f);
-        //transform = glm::scale(transform, glm::vec3(glm::sin((float)glfwGetTime()), 0.6, 0.6));
-        //transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
 
-        // model matrix  
-        glm::mat4 model = glm::mat4(1.0f); // gotta make it a identity matrix to init
-        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-        // view matrix
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -40.f)); // translate the scene in the reverse direction of where we want to move
-
-        // projection matrix
+        // projection matrix (2D no need for model or view)
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-        // orthographic projection matrix : glm::ortho(0.0f, 800.0f, 0.0f, 0.1f, 100.0f)
-
-        // render the triangle-----------------------------------------------------------
+        projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, -1.0f, 1.0f);
+        // shader and bind VAO's ---------------------------------------------------------
 
         ourShader.use();
 
         glBindVertexArray(VAO);
 
         // send uniforms to vertex shader-------------------------------------------------
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "transform"), 1, GL_FALSE, glm::value_ptr(transform));
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particlePosition[0]);
         //---------------------------------------------------------------------------
 
- 
         glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
         
-
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
