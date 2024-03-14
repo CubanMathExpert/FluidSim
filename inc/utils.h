@@ -18,3 +18,4 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height); //Resize window
 void processInput(GLFWwindow* window); //Actions when inputs are given to the window.
 void generateCircleVertices(float radius, int segments, std::vector<float>& vertices);
+void renderFPS(GLFWwindow* window);
