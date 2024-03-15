@@ -3,6 +3,7 @@ layout (location = 0) in vec3 aPos;   // the position variable has attribute pos
 
 uniform mat4 projection;
 uniform vec3 offset;
+uniform float deltaTime;
 
 void main()
 {

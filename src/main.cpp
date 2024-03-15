@@ -1,6 +1,7 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include "shader_c.h"
+#include "particle.h"
 #include "utils.h"
 #include <iostream>
 #include <vector>
@@ -45,10 +46,9 @@ int main()
     Shader ourShader("../shaders/vertexShader.glsl", "../shaders/fragmentShader.glsl"); // you can name your shader files however you like
 
     // particle data
-    const float particleRadius = 0.05f;
-    const int particleSegments = 20;
+    Particle particle;
     std::vector<float> vertices;
-    generateCircleVertices(particleRadius, particleSegments, vertices);
+    generateCircleVertices(particle.radius, particle.segments, vertices);
 
     // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
     unsigned int particle_vertex_buffer;
@@ -88,11 +88,11 @@ int main()
         particleVelocity += gravity * deltaTime;
         particlePosition += particleVelocity * deltaTime;
 
-        if (particlePosition.x - particleRadius < -4.0f || particlePosition.x + particleRadius > 4.0f)
+        if (particlePosition.x - particle.radius < -4.0f || particlePosition.x + particle.radius > 4.0f)
         {
             particleVelocity.x *= -1.0f; // invert x velo
         }
-        if (particlePosition.y < (-3.0f + particleRadius) || particlePosition.y > (3.0 - particleRadius))
+        if (particlePosition.y < (-3.0f + particle.radius) || particlePosition.y > (3.0 - particle.radius))
         {
             particleVelocity.y *= -1.0f; // invert x velo
         }
@@ -116,6 +116,7 @@ int main()
         // send uniforms to vertex shader-------------------------------------------------
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particlePosition[0]);
+        glUniform1f(glGetUniformLocation(ourShader.ID, "deltaTime"), deltaTime);
         //---------------------------------------------------------------------------
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
