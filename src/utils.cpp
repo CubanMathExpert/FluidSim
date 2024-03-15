@@ -49,6 +49,21 @@ void renderFPS(GLFWwindow* window)
     glfwSetWindowTitle(window, fpsString.c_str());
 }
 
+float randomFloat(float max)
+{
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+
+
+    srand(static_cast<unsigned int>((unsigned long long)(ts.tv_sec) * 1000 + (unsigned long long)(ts.tv_nsec)));
+    // generate value to subtract
+    int randomInteger = rand();
+    float randomFloat = 6 * static_cast<float>(randomInteger) / RAND_MAX;
+
+    return max - randomFloat;
+
+}
+
 
 
 

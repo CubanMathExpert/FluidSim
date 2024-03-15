@@ -1,5 +1,11 @@
 #include "particle.h"
 
+// METHODS for parcle fluids
+// Smoothed Particle Hydrodynamics (SPH)
+// Marker and Cell (MAC)
+//      http://plaza.ufl.edu/ebrackear/
+//      https://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid_flow_for_the_rest_of_us.pdf
+
 float dragFactor = 0.999f;
 
 void checkEdgeCollisions(Particle& particle, float deltaTime)

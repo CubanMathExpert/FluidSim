@@ -44,22 +44,38 @@ int main()
     // build and compile our shader program
     Shader ourShader("../shaders/vertexShader.glsl", "../shaders/fragmentShader.glsl"); // you can name your shader files however you like
 
+    // generate list of particle locations/translation-vectors
+    int n = 10;
+    glm::vec2 translations[n];
+    int index = 0;
+    float offset = 0.1f;
+    for (int i = 0; i < n; i++)
+    {
+        glm::vec2 translation;
+        translation.x = randomFloat(3.5f);
+        translation.y = randomFloat(2.5f);
+        translations[index++] = translation;
+        
+    }
+    
+    
+
     // particle data
     Particle particle;
     std::vector<float> vertices;
     generateCircleVertices(particle.radius, particle.segments, vertices);
 
     // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
-    unsigned int particle_vertex_buffer;
+    unsigned int particle_vertex_buffer, VAO;
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &particle_vertex_buffer);
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, particle_vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, vertices.size()* sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    unsigned int  VAO;
-    glGenVertexArrays(1, &VAO);
+    
 
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
+    
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -114,6 +130,7 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &particle_vertex_buffer);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
