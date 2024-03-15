@@ -14,6 +14,7 @@ add_executable(FluidSim
     src/main.cpp 
     src/glad.c
     src/utils.cpp
+    src/particle.cpp
 )
 
 target_link_libraries(FluidSim 

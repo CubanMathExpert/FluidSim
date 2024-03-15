@@ -1,15 +1,14 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include "shader_c.h"
-#include "particle.h"
+#include "../inc/particle.h"
 #include "utils.h"
 #include <iostream>
 #include <vector>
 
 // there is more but most of the useful stuff in here
 
-const glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
-#define PI 3.141592653589793f
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -69,11 +68,8 @@ int main()
     
     float lastFrame = 0.0f;
     
-    glm::vec3 particlePosition(0.0f, 2.9f, 0.0f);
-    glm::vec3 particlePosition2(3.0f, 2.9f, 0.0f);
-
-    glm::vec3 particleVelocity(7.0f, 0.0f, 0.0f); // initial velocity
-    float dragFactor = 0.999f;
+    particle.position = glm::vec3(0.0f, 2.9f, 0.0f);
+    particle.velocity = glm::vec3(7.0f, 0.0f, 0.0f); // initial velocity
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -83,19 +79,9 @@ int main()
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // euler implicite method
-        particleVelocity.x *= dragFactor;
-        particleVelocity += gravity * deltaTime;
-        particlePosition += particleVelocity * deltaTime;
-
-        if (particlePosition.x - particle.radius < -4.0f || particlePosition.x + particle.radius > 4.0f)
-        {
-            particleVelocity.x *= -1.0f; // invert x velo
-        }
-        if (particlePosition.y < (-3.0f + particle.radius) || particlePosition.y > (3.0 - particle.radius))
-        {
-            particleVelocity.y *= -1.0f; // invert x velo
-        }
+        // particle handlers
+        updateParticles(particle, deltaTime);
+        checkEdgeCollisions(particle, deltaTime);
 
         // input
         processInput(window);
@@ -107,15 +93,14 @@ int main()
         // create transforms------------------------------------------------------------
 
         // projection matrix (2D no need for model or view)
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, -1.0f, 1.0f);
+        glm::mat4 projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, -1.0f, 1.0f);
         // shader and bind VAO's ---------------------------------------------------------
 
         ourShader.use();
 
         // send uniforms to vertex shader-------------------------------------------------
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particlePosition[0]);
+        glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particle.position[0]);
         glUniform1f(glGetUniformLocation(ourShader.ID, "deltaTime"), deltaTime);
         //---------------------------------------------------------------------------
 
