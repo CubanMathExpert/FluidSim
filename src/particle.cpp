@@ -16,7 +16,7 @@ void checkEdgeCollisions(Particle& particle, float deltaTime)
     }
     if (particle.position.y < (-3.0f + particle.radius) || particle.position.y > (3.0 - particle.radius))
     {
-            particle.velocity.y *= -1.0f; // invert x velo
+            particle.velocity.y *= -1.0f; // invert y velo
     }
 }
 

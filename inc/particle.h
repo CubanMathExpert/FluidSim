@@ -15,11 +15,12 @@ struct Particle
     const int segments = 20;
 
     bool isStuck; // used later maybe
+
 };
 
-// physics of the particle
-void checkEdgeCollisions(Particle& particle, float deltaTime);
-void updateParticles(Particle& Particle, float deltaTime);
+    // physics of the particle
+    void checkEdgeCollisions(Particle& particle, float deltaTime);
+    void updateParticles(Particle& Particle, float deltaTime);
 
 
 #endif // MYSTRUCT_H

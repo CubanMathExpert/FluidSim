@@ -1,7 +1,7 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include "shader_c.h"
-#include "../inc/particle.h"
+#include "particle.h"
 #include "utils.h"
 #include <iostream>
 #include <vector>
@@ -47,19 +47,15 @@ int main()
     // generate list of particle locations/translation-vectors
     int n = 10;
     glm::vec2 translations[n];
-    int index = 0;
     float offset = 0.1f;
     for (int i = 0; i < n; i++)
     {
-        glm::vec2 translation;
-        translation.x = randomFloat(3.5f);
-        translation.y = randomFloat(2.5f);
-        translations[index++] = translation;
-        
+            glm::vec2 translation;
+            translation.x = randomFloat(3.5f);
+            translation.y = randomFloat(2.5f);
+            translations[i] = translation;
     }
     
-    
-
     // particle data
     Particle particle;
     std::vector<float> vertices;
@@ -73,15 +69,12 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, particle_vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, vertices.size()* sizeof(float), vertices.data(), GL_STATIC_DRAW);
     
-
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     
-
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    
     float lastFrame = 0.0f;
     
     particle.position = glm::vec3(0.0f, 2.9f, 0.0f);
@@ -90,10 +83,12 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        // time and particle movement
+        // time 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        // generate particle data
 
         // particle handlers
         updateParticles(particle, deltaTime);
@@ -118,9 +113,15 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particle.position[0]);
         glUniform1f(glGetUniformLocation(ourShader.ID, "deltaTime"), deltaTime);
+        // set array of offsets
+        for (unsigned int i = 0; i < n; i++)
+        {
+            ourShader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
+        }
         //---------------------------------------------------------------------------
-
-        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
+        glBindVertexArray(VAO);
+        glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, vertices.size() / 3, n);
+        //glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         renderFPS(window);
