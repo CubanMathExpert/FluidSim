@@ -20,5 +20,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height); //Res
 void processInput(GLFWwindow* window); //Actions when inputs are given to the window.
 void generateCircleVertices(float radius, int segments, std::vector<float>& vertices);
 void renderFPS(GLFWwindow* window);
-float randomFloat(float max);
+float randomFloat(float max, int vpAxisSizex2);
 
