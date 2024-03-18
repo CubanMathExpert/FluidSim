@@ -57,10 +57,10 @@ int main()
 
     unsigned int  VAO;
     glGenVertexArrays(1, &VAO);
-
+    
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
-
+    
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -74,7 +74,7 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        // time and particle movement
+        // time and particle movement 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -102,8 +102,8 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particle.position[0]);
         glUniform1f(glGetUniformLocation(ourShader.ID, "deltaTime"), deltaTime);
-        //---------------------------------------------------------------------------
-
+                //---------------------------------------------------------------------------
+        
         glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -114,7 +114,7 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     glDeleteVertexArrays(1, &VAO);
-
+    
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
     return 0;

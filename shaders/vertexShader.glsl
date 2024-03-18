@@ -8,6 +8,6 @@ uniform float deltaTime;
 void main()
 {
     vec3 offsetPosition = aPos + offset;
-
+        
     gl_Position = projection * vec4(offsetPosition, 1.0);
 } 
