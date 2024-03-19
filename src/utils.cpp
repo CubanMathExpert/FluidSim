@@ -58,7 +58,17 @@ float genRandomFloat(float min, float max)
     return dis(gen);
 }  
 
-
+void particleData(std::vector<Particle>& particles)
+{
+    int counter = 1;
+    for (Particle particle:particles)
+    {
+        std::cout << "  Particle " << counter << ": " << "Velocity: " << "x: " << particle.velocity.x << "  y: " << particle.velocity.y << 
+            "   Position: " << "x: " << particle.position.x << "   y: " << particle.position.y << std::endl;
+        counter++;
+    }
+    counter = 0;
+}
 
 
 

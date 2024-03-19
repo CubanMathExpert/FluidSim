@@ -27,9 +27,11 @@ void checkEdgeCollisions(std::vector<Particle>& particles, float deltaTime)
 void updateParticles(Particle& particle, float deltaTime)
 {
         // euler implicite method
-        particle.velocity.x *= dragFactor;
-        particle.velocity += gravity * deltaTime;
+        
         particle.position += particle.velocity * deltaTime;
+        particle.velocity += gravity * deltaTime;
+        particle.velocity.x *= dragFactor;
+        
         
 }
 

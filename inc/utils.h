@@ -6,6 +6,7 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include <random>
+#include "particle.h"
 
 // This include works on main cause included header
 #include <glm/glm.hpp>
@@ -21,3 +22,4 @@ void processInput(GLFWwindow* window); //Actions when inputs are given to the wi
 void generateCircleVertices(float radius, int segments, std::vector<float>& vertices);
 void renderFPS(GLFWwindow* window);
 float genRandomFloat(float min, float max);
+void particleData(std::vector<Particle>& particles);

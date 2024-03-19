@@ -13,7 +13,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const int num_particles = 10;
+const int num_particles = 5;
 
 
 
@@ -51,13 +51,13 @@ int main()
     std::vector<float> vertices;
     generateCircleVertices(particles[0].radius, particles[0].segments, vertices);
 
-
     for (int i = 0; i < num_particles; ++i)
     {
         // generate initial position and velocity
         particles[i].position = glm::vec2(-2.5f - genRandomFloat(0.0, 1.0), 1.5f + genRandomFloat(0.0, 1.0));
         particles[i].velocity = glm::vec2(genRandomFloat(3.0f, 7.0f), 0.0f); // min speed has to be 2/sqrt(2) for it to be out of spawn zone before in one second
     }
+    // initial velo and positions are properly initialized
 
     unsigned int particle_vertex_buffer;
     glGenBuffers(1, &particle_vertex_buffer);
@@ -74,13 +74,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
-    
-    
     float lastFrame = 0.0f;
-    float dragFactor = 0.999f;
-    const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
-
 
     // render loop
     while (!glfwWindowShouldClose(window))
