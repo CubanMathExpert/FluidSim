@@ -15,6 +15,8 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 const int num_particles = 10;
 
+
+
 int main()
 {
     // glfw: initialize and configure
@@ -44,12 +46,19 @@ int main()
     // build and compile our shader program
     Shader ourShader("../shaders/vertexShader.glsl", "../shaders/fragmentShader.glsl"); // you can name your shader files however you like
 
-    // particle data
-    Particle particle;
+    // for multiple particles
+    std::vector<Particle> particles(num_particles); // vector to hold all the particles
     std::vector<float> vertices;
-    generateCircleVertices(particle.radius, particle.segments, vertices);
+    generateCircleVertices(particles[0].radius, particles[0].segments, vertices);
 
-    // http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/particles-instancing/
+
+    for (int i = 0; i < num_particles; ++i)
+    {
+        // generate initial position and velocity
+        particles[i].position = glm::vec3(-2.5f - genRandomFloat(0.0, 1.0), 1.5f + genRandomFloat(0.0, 1.0), 0.0f);
+        particles[i].velocity = glm::vec3(genRandomFloat(3.0f, 7.0f), 0.0f, 0.0f); // min speed has to be 2/sqrt(2) for it to be out of spawn zone before in one second
+    }
+
     unsigned int particle_vertex_buffer;
     glGenBuffers(1, &particle_vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, particle_vertex_buffer);
@@ -65,11 +74,13 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+    
     
     float lastFrame = 0.0f;
-    
-    particle.position = glm::vec3(0.0f, 2.9f, 0.0f);
-    particle.velocity = glm::vec3(7.0f, 0.0f, 0.0f); // initial velocity
+    float dragFactor = 0.999f;
+    const glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -79,10 +90,11 @@ int main()
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // particle handlers
-        updateParticles(particle, deltaTime);
-        checkEdgeCollisions(particle, deltaTime);
-
+        for (Particle particle: particles)
+        {
+            updateParticles(particle, deltaTime);
+        }
+        
         // input
         processInput(window);
 
@@ -90,21 +102,22 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // create transforms------------------------------------------------------------
-
-        // projection matrix (2D no need for model or view)
-        glm::mat4 projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, -1.0f, 1.0f);
-        // shader and bind VAO's ---------------------------------------------------------
-
         ourShader.use();
 
-        // send uniforms to vertex shader-------------------------------------------------
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniform3fv(glGetUniformLocation(ourShader.ID, "offset"), 1, &particle.position[0]);
-        glUniform1f(glGetUniformLocation(ourShader.ID, "deltaTime"), deltaTime);
-                //---------------------------------------------------------------------------
+        glm::mat4 projection = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f, -1.0f, 1.0f); // orthgraphic projection screen dim 4x3
+        glm::mat4 view = glm::mat4(1.0f); // camera stays at the same spot
         
-        glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
+        // same view and proj matrix for all particles
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+        glBindVertexArray(VAO);
+        for (Particle particle: particles)
+        {
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), particle.position);
+            glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
+        }
         
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         renderFPS(window);
