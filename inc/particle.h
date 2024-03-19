@@ -4,16 +4,16 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-const glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
 #define PI 3.141592653589793f
 
 
 
 struct Particle
 {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    const float radius = 0.03f;
+    glm::vec2 position;
+    glm::vec2 velocity;
+    const float radius = 0.05f;
     const int segments = 6;
 
     bool isStuck; // used later maybe

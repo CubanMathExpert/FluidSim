@@ -55,8 +55,8 @@ int main()
     for (int i = 0; i < num_particles; ++i)
     {
         // generate initial position and velocity
-        particles[i].position = glm::vec3(-2.5f - genRandomFloat(0.0, 1.0), 1.5f + genRandomFloat(0.0, 1.0), 0.0f);
-        particles[i].velocity = glm::vec3(genRandomFloat(3.0f, 7.0f), 0.0f, 0.0f); // min speed has to be 2/sqrt(2) for it to be out of spawn zone before in one second
+        particles[i].position = glm::vec2(-2.5f - genRandomFloat(0.0, 1.0), 1.5f + genRandomFloat(0.0, 1.0));
+        particles[i].velocity = glm::vec2(genRandomFloat(3.0f, 7.0f), 0.0f); // min speed has to be 2/sqrt(2) for it to be out of spawn zone before in one second
     }
 
     unsigned int particle_vertex_buffer;
@@ -79,7 +79,7 @@ int main()
     
     float lastFrame = 0.0f;
     float dragFactor = 0.999f;
-    const glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+    const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
 
 
     // render loop
@@ -114,7 +114,7 @@ int main()
         glBindVertexArray(VAO);
         for (Particle particle: particles)
         {
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), particle.position);
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(particle.position, 0.0f));
             glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLE_FAN, 0, vertices.size() / 3);
         }
