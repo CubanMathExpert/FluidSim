@@ -13,7 +13,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const int num_particles = 10;
+const int num_particles = 3;
 
 
 
@@ -96,15 +96,29 @@ int main()
         // edge collision
         for (Particle& particle: particles)
         {
-            if (particle.position.x - particle.radius < -4.0f || particle.position.x + particle.radius > 4.0f)
+            // collision on x axis for edge of vp
+            if (particle.position.x < (-4.0f + particle.radius))
             {
-                particle.velocity.x *= -0.7f; // invert x velo
+                particle.position.x = -3.99f + particle.radius; // bring back particle into the screen if the predicted position is beyond the screen (stuck)
+                particle.velocity.x *= -0.7f; // invert y velo and loss of energy
             }
-            if (particle.position.y < (-3.0f + particle.radius) || particle.position.y > (3.0 - particle.radius))
+            if (particle.position.x > (4.0f - particle.radius))
             {
-                particle.velocity.y *= -0.7f; // invert y velo
+                particle.position.x = 3.99f - particle.radius;
+                particle.velocity.x *= -0.7f;
             }
-
+            // collision on y axis for edge of vp
+            if (particle.position.y < (-3.0f + particle.radius))
+            {
+                particle.position.y = -2.99f + particle.radius;
+                particle.velocity.y *= -0.7f; 
+            }
+            if (particle.position.y > (3.0 - particle.radius))
+            {
+                particle.position.y = 2.99f - particle.radius;
+                particle.velocity.y *= -0.7f;
+            }
+            
         }
 
         
@@ -122,10 +136,13 @@ int main()
                 {
                     glm::vec2 distanceVect = particle1.position - particle2.position;
                     float d = glm::dot(distanceVect, distanceVect);
+                    // collision detected
                     if (d < particle1.radius * particle2.radius)
                     {
+                        // change velocity of particles
                         particle1.velocity = particle1.velocity - glm::dot(particle1.velocity - particle2.velocity, particle1.position - particle2.position) / d * distanceVect;
-                        particle2.velocity = particle2.velocity - glm::dot(particle2.velocity - particle1.velocity, particle2.position - particle1.position) / d * (1.0f * distanceVect);
+                        particle2.velocity = particle2.velocity - glm::dot(particle2.velocity - particle1.velocity, particle2.position - particle1.position) / d * (-1.0f * distanceVect);
+                        
                     }
                 }
             }

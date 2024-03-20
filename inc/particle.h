@@ -14,7 +14,7 @@ struct Particle
     glm::vec2 position;
     glm::vec2 velocity;
     const float mass = 1.0f;
-    const float radius = 0.05f;
+    const float radius = 0.2f;
     const int segments = 6;
 
     bool isStuck; // used later maybe
