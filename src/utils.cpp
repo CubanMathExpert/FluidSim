@@ -70,6 +70,11 @@ void particleData(std::vector<Particle>& particles)
     counter = 0;
 }
 
+void printVec2(glm::vec2 vec)
+{
+    std::cout << "x: " << vec.x << "    " << "y: " << vec.y << std::endl;
+}
+
 
 
 

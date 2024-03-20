@@ -23,3 +23,4 @@ void generateCircleVertices(float radius, int segments, std::vector<float>& vert
 void renderFPS(GLFWwindow* window);
 float genRandomFloat(float min, float max);
 void particleData(std::vector<Particle>& particles);
+void printVec2(glm::vec2 vec);

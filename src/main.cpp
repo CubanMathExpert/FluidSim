@@ -13,7 +13,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const int num_particles = 5;
+const int num_particles = 10;
 
 
 
@@ -84,10 +84,53 @@ int main()
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        for (Particle particle: particles)
+
+        // particle movement
+        for (Particle& particle: particles)
         {
-            updateParticles(particle, deltaTime);
+            // euler implicit method : xf = xi + v * deltaTime
+            particle.position = particle.position + particle.velocity * deltaTime; // update the position
+            particle.velocity = particle.velocity + gravity * deltaTime;
+            particle.velocity.x = particle.velocity.x * 0.999;
         }
+        // edge collision
+        for (Particle& particle: particles)
+        {
+            if (particle.position.x - particle.radius < -4.0f || particle.position.x + particle.radius > 4.0f)
+            {
+                particle.velocity.x *= -0.7f; // invert x velo
+            }
+            if (particle.position.y < (-3.0f + particle.radius) || particle.position.y > (3.0 - particle.radius))
+            {
+                particle.velocity.y *= -0.7f; // invert y velo
+            }
+
+        }
+
+        
+        // collisions between particles naive (O(n2))
+        for (Particle& particle1: particles)
+        {
+            //particleData(particles);
+            for (Particle& particle2: particles)
+            {
+                if (particle1.position == particle2.position)
+                {
+                    continue;
+                }
+                else
+                {
+                    glm::vec2 distanceVect = particle1.position - particle2.position;
+                    float d = glm::dot(distanceVect, distanceVect);
+                    if (d < particle1.radius * particle2.radius)
+                    {
+                        particle1.velocity = particle1.velocity - glm::dot(particle1.velocity - particle2.velocity, particle1.position - particle2.position) / d * distanceVect;
+                        particle2.velocity = particle2.velocity - glm::dot(particle2.velocity - particle1.velocity, particle2.position - particle1.position) / d * (1.0f * distanceVect);
+                    }
+                }
+            }
+        }
+
         
         // input
         processInput(window);

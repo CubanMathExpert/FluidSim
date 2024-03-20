@@ -14,11 +14,11 @@ void checkEdgeCollisions(std::vector<Particle>& particles, float deltaTime)
         {
                 if (particle.position.x - particle.radius < -4.0f || particle.position.x + particle.radius > 4.0f)
                 {
-                        particle.velocity.x *= -1.0f; // invert x velo
+                        particle.velocity.x *= -0.70f; // invert x velo
                 }
                 if (particle.position.y < (-3.0f + particle.radius) || particle.position.y > (3.0 - particle.radius))
                 {
-                        particle.velocity.y *= -1.0f; // invert y velo
+                        particle.velocity.y *= -0.70f; // invert y velo
                 }
         }
         
@@ -34,6 +34,8 @@ void updateParticles(Particle& particle, float deltaTime)
         
         
 }
+
+
 
 
 
