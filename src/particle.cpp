@@ -35,7 +35,10 @@ void updateParticles(Particle& particle, float deltaTime)
         
 }
 
-
+void naiveCollisionCheck()
+{
+        
+}
 
 
 

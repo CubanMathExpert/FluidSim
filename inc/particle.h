@@ -14,15 +14,15 @@ struct Particle
     glm::vec2 position;
     glm::vec2 velocity;
     const float mass = 1.0f;
-    const float radius = 0.2f;
+    const float radius = 0.07f;
     const int segments = 6;
 
-    bool isStuck; // used later maybe
 };
 
     // physics of the particle
     void checkEdgeCollisions(std::vector<Particle>& particles, float deltaTime);
     void updateParticles(Particle& particle, float deltaTime);
+    void naiveCollisionCheck();
 
 
 #endif // MYSTRUCT_H
