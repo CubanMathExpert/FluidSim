@@ -81,30 +81,14 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        // time and particle movement 
+        // time 
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
 
-        // particle movement
-        for (Particle& particle: particles)
-        {
-            // euler implicit method : xf = xi + v * deltaTime
-            particle.position = particle.position + particle.velocity * deltaTime; // update the position
-            particle.velocity = particle.velocity + gravity * deltaTime;
-            particle.velocity.x = particle.velocity.x * 0.999;
-        }
-
-        // edge of viewport collisions
-        checkWallCollisions(particles, deltaTime);
-        
-        // collisions between particles naive (O(n2))
-        naiveCollisionCheck(particles);
-
-
-
-        
+        // handle particle movement
+        update_simulation(particles, deltaTime);
         
         // input
         processInput(window);
