@@ -1,0 +1,143 @@
+struct Grid
+{
+    float cellSize = 0.1f;
+    int width = static_cast<int>(8.0f / cellSize); // full width of vp
+    int height = static_cast<int>(6.0f / cellSize); // full height of vp
+    std::vector<std::vector<std::vector<Particle*>>> cells;
+};
+
+void clearGrid(Grid& grid)
+{
+    for (int i = 0; i < grid.width; ++i) {
+        for (int j = 0; j < grid.height; ++j) {
+            grid.cells[i][j].clear();
+        }
+    }
+}
+
+void createGrid(Grid& grid)
+{
+    grid.cells.resize(grid.width); // Resize the outer vector to have a size equal to grid.width
+    for (int i = 0; i < grid.width; ++i) {
+        grid.cells[i].resize(grid.height); // Resize each inner vector to have a size equal to grid.height
+    }
+}
+
+void updateGrid(Grid& grid, std::vector<Particle>& particles)
+{
+    grid.cells.clear(); // reset the grid
+    createGrid(grid); // remake the grid in reference
+
+    for (Particle& particle : particles)
+    {
+        // calculate cell indices and multiply to find in which cell we are 
+        int cell_x = static_cast<int>((particle.position.x + 4) / grid.cellSize);
+        int cell_y = static_cast<int>((particle.position.y + 3) / grid.cellSize);
+        // sometimes particle pushed past the wall gotta correct the value
+        if (cell_x > grid.width - 1) cell_x = grid.width - 1;
+        if (cell_y > grid.height - 1) cell_y = grid.height - 1;
+
+        grid.cells[cell_x][cell_y].push_back(&particle);
+
+        
+    }
+
+    // make the neighbors here
+
+}
+
+void computeDensity(Grid& grid)
+{
+    float h2 = pow(cutoffDistance, 2);
+
+    // iterate grid
+	for (int i = 0; i < grid.cells.size(); i++) // columns
+    {
+        for (int j = 0; j < grid.cells[i].size(); j++) // cells
+        {
+            if (grid.cells[i][j].size() != 0)
+            {
+                for (int k = 0; k < grid.cells[i][j].size(); k++) // particle 1
+                {
+                    Particle* p1 = grid.cells[i][j][k];
+                    float density = 0; // density for p1
+
+                    for (int l = 0; l < grid.cells[i][j].size(); l++) // particle 2
+                    {
+                        Particle* p2 = grid.cells[i][j][l];
+                        // don't check particle with itself
+                        if (p1 != p2)
+                        {
+                            glm::vec2 dist = p1->position - p2->position;
+                            float r2 = glm::dot(dist, dist);
+
+                            // correct particle overlap
+                            if (r2 < 4.0f * p1->radius * p2->radius)
+                            {
+                                // this code separates the particles when they're overlapping
+                                float dx = p2->position.x - p1->position.x;
+                                float dy = p2->position.y - p1->position.y;
+                                float d = sqrt(r2);
+
+                                float overlap = d - (2.0f * p1->radius);
+                        
+                                float dirX = dx / d;
+                                float dirY = dy / d;
+
+                                float dispX = dirX * overlap / 2.0f;
+                                float dispY = dirY * overlap / 2.0f;
+
+                                p1->position.x += dispX;
+                                p1->position.y += dispY;
+                                p2->position.x -= dispX;
+                                p2->position.y -= dispY; 
+                            }
+
+                            // calculate density
+                            if (0 < r2 && r2 < h2)
+                            {
+                                density += p2->mass * (315 / (64 * PI * pow(cutoffDistance, 9))) * pow(h2 - r2, 3);
+                            }
+
+                            
+                        }
+                    }
+                    p1->density = density;
+                }
+            }
+        }
+        
+    }
+    
+    
+}
+
+void computePressure(std::vector<Particle>& particles)
+{
+}
+
+
+void showGrid(Grid& grid)
+{
+    // Clear the terminal
+    std::cout << "\033[2J\033[1;1H";
+    // Iterate over each cell in the grid
+    for (int y = 0; y < grid.height; ++y)
+    {
+        for (int x = 0; x < grid.width; ++x)
+        {
+            // Check if the current cell contains particles
+            if (!grid.cells[x][y].empty())
+            {
+                // Print the number of particles in the cell
+                std::cout << grid.cells[x][y].size() << " ";
+            }
+            else
+            {
+                // Print a placeholder for empty cells
+                std::cout << ". ";
+            }
+        }
+        std::cout << std::endl; // Move to the next line after printing each row
+    }
+}

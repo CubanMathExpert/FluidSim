@@ -1,10 +1,9 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include "shader_c.h"
-#include "../inc/particle.h"
+#include "particle.h"
 #include "utils.h"
-#include <iostream>
-#include <vector>
+
 
 // there is more but most of the useful stuff in here
 
@@ -13,7 +12,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const int num_particles = 50;
+
 
 
 
@@ -75,14 +74,9 @@ int main()
     glEnableVertexAttribArray(0);
 
     float lastFrame = 0.0f;
-    // sort particles by axis
-    std::vector<Particle> sortedParticlePositions;
-    /*
-    for (Particle particle: particles)
-    {
-        sortedParticlePositions.push_back(particle.position.x);
-    }
-    */
+
+    
+    
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -101,83 +95,16 @@ int main()
             particle.velocity = particle.velocity + gravity * deltaTime;
             particle.velocity.x = particle.velocity.x * 0.999;
         }
-        // edge collision
-        for (Particle& particle: particles)
-        {
-            // collision on x axis for edge of vp
-            if (particle.position.x < (-4.0f + particle.radius))
-            {
-                particle.position.x = -4.0f + particle.radius; // bring back particle into the screen if the predicted position is beyond the screen (stuck)
-                particle.velocity.x *= -0.7f; // invert y velo and loss of energy
-            }
-            if (particle.position.x > (4.0f - particle.radius))
-            {
-                particle.position.x = 4.0f - particle.radius;
-                particle.velocity.x *= -0.7f;
-            }
-            // collision on y axis for edge of vp
-            if (particle.position.y < (-3.0f + particle.radius))
-            {
-                particle.position.y = -3.0f + particle.radius;
-                particle.velocity.y *= -0.0f; 
-            }
-            if (particle.position.y > (3.0 - particle.radius))
-            {
-                particle.position.y = 3.0f - particle.radius;
-                particle.velocity.y *= -0.7f;
-            }
-            
-        }
 
-
-        // sweep and prune collision detection
-        
+        // edge of viewport collisions
+        checkWallCollisions(particles, deltaTime);
         
         // collisions between particles naive (O(n2))
-        for (Particle& particle1: particles)
-        {
-            //particleData(particles);
-            for (Particle& particle2: particles)
-            {
-                if (particle1.position == particle2.position)
-                {
-                    continue;
-                }
-                else
-                {
-                    glm::vec2 distanceVect = particle1.position - particle2.position;
-                    float d2 = glm::dot(distanceVect, distanceVect);
+        naiveCollisionCheck(particles);
 
-                    // collision detected
-                    if (d2 < 4.0f * particle1.radius * particle2.radius)
-                    {
-                        // change velocity of particles
-                        particle1.velocity = particle1.velocity - glm::dot(particle1.velocity - particle2.velocity, particle1.position - particle2.position) / d2 * distanceVect;
-                        particle2.velocity = particle2.velocity - glm::dot(particle2.velocity - particle1.velocity, particle2.position - particle1.position) / d2 * (-1.0f * distanceVect);
-                        
 
-                        float dx = particle2.position.x - particle1.position.x;
-                        float dy = particle2.position.y - particle1.position.y;
-                        float d = sqrt(d2);
 
-                        float overlap = d - (2.0f * particle1.radius);
-                        
-                        float dirX = dx / d;
-                        float dirY = dy / d;
-
-                        float dispX = dirX * overlap / 2.0f;
-                        float dispY = dirY * overlap / 2.0f;
-
-                        particle1.position.x += dispX;
-                        particle1.position.y += dispY;
-                        particle2.position.x -= dispX;
-                        particle2.position.y -= dispY; 
-
-                    }
-                }
-            }
-        }
-
+        
         
         // input
         processInput(window);
