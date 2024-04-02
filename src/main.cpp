@@ -50,12 +50,7 @@ int main()
     std::vector<float> vertices;
     generateCircleVertices(particles[0].radius, particles[0].segments, vertices);
 
-    for (int i = 0; i < num_particles; ++i)
-    {
-        // generate initial position and velocity
-        particles[i].position = glm::vec2(-2.5f - genRandomFloat(0.0, 1.0), 1.5f + genRandomFloat(0.0, 1.0));
-        particles[i].velocity = glm::vec2(genRandomFloat(3.0f, 7.0f), 0.0f); // min speed has to be 2/sqrt(2) for it to be out of spawn zone before in one second
-    }
+    initializeParticles(particles, num_particles);
     // initial velo and positions are properly initialized
 
     unsigned int particle_vertex_buffer;
@@ -75,7 +70,11 @@ int main()
 
     float lastFrame = 0.0f;
 
-    
+    // test density
+    for (Particle p : particles)
+    {
+        p.density = calculate_density(p, particles);
+    }
     
 
     // render loop
@@ -87,8 +86,16 @@ int main()
         lastFrame = currentFrame;
 
 
-        // handle particle movement
+        // steps of the simulation
         update_simulation(particles, deltaTime);
+
+        //testing values
+        //for (Particle& p : particles)
+        //{
+            //std::cout << p.position.x << "  " << p.position.y << std::endl;
+            //std::cout << " MINE : Density: " << p.density << " " << "Pressure: " << p.pressure << std::endl;
+            //std::cout << "Acceleration: " << p.acceleration.x << "  " << p.acceleration.y << std::endl;
+        //}
         
         // input
         processInput(window);
