@@ -3,6 +3,7 @@
 #include "shader_c.h"
 #include "particle.h"
 #include "utils.h"
+#include "grid.h"
 
 
 // there is more but most of the useful stuff in here
@@ -50,7 +51,7 @@ int main()
     std::vector<float> vertices;
     generateCircleVertices(particles[0].radius, particles[0].segments, vertices);
 
-    initializeParticles(particles, num_particles);
+    
     // initial velo and positions are properly initialized
 
     unsigned int particle_vertex_buffer;
@@ -68,13 +69,12 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // ------------------- initializations
     float lastFrame = 0.0f;
 
-    // test density
-    for (Particle p : particles)
-    {
-        p.density = calculate_density(p, particles);
-    }
+    initializeParticles(particles, num_particles);
+
+    Grid my_grid;
     
 
     // render loop
@@ -85,17 +85,13 @@ int main()
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        my_grid.update_grid(particles);
+        my_grid.set_neighbors(particles);
+        //my_grid.print_grid();
 
         // steps of the simulation
         update_simulation(particles, deltaTime);
 
-        //testing values
-        //for (Particle& p : particles)
-        //{
-            //std::cout << p.position.x << "  " << p.position.y << std::endl;
-            //std::cout << " MINE : Density: " << p.density << " " << "Pressure: " << p.pressure << std::endl;
-            //std::cout << "Acceleration: " << p.acceleration.x << "  " << p.acceleration.y << std::endl;
-        //}
         
         // input
         processInput(window);

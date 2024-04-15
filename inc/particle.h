@@ -10,9 +10,9 @@
 
 const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
 #define PI 3.141592653589793f
-const float smoothing_radius = 0.5f;
+const float smoothing_radius = 0.03f;
 #define gravity glm::vec2(0.0f, -9.81f)
-const int num_particles = 50;
+const int num_particles = 1000;
 
 
 struct Particle
@@ -30,6 +30,9 @@ struct Particle
     const float radius = 0.05f;
     const int segments = 6;
 
+    std::vector<Particle> neighbors;
+
+
 };
 
     // physics of the particle
@@ -44,15 +47,6 @@ struct Particle
     // intial spawner
     void initializeParticles(std::vector<Particle>& particles, int num_particles);
     
-    // density
-    float smoothing_kernel(float r, float d);
-    float smoothing_kernel_derivative(float r, float d);
-    float calculate_density(Particle& p, std::vector<Particle>& particles);
-    void calculate_pressure(std::vector<Particle>& particles);
-    void update_densities(std::vector<Particle>& particles);
-    glm::vec2 calculate_pressure_force(Particle& p, std::vector<Particle>& particles);
-    void calculatePressureForce(std::vector<Particle>& particles);
-    float convert_dens2pressure(float density);
 
 
     ////////////////////////////////////
