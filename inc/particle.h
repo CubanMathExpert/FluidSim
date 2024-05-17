@@ -12,7 +12,7 @@ const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
 #define PI 3.141592653589793f
 const float smoothing_radius = 0.03f;
 #define gravity glm::vec2(0.0f, -9.81f)
-const int num_particles = 1000;
+const int num_particles = 10;
 
 
 struct Particle
