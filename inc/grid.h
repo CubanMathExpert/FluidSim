@@ -19,7 +19,7 @@ struct Grid
     // find neighbors for all particles and keep updating 
     void set_neighbors(std::vector<Particle>& particles)
     {
-        //int counter = 0;
+        int counter = 0;
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
@@ -30,14 +30,14 @@ struct Grid
                     {
                         if (p1->position != p2->position)
                         {
-                            //counter++;
+                            counter++;
                         }
                         
                     }
                 }
             }
         }
-        //std::cout << counter << std::endl;
+        std::cout << counter << std::endl;
     }
 
     // set the sizes for the grid 
