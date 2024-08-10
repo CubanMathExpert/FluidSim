@@ -49,7 +49,10 @@ struct Particle
 
     // density
     void computeDensity(std::vector<Particle>& particles);
-    float poly6kernel(float r, float d);
+    float poly6kernel(float r, float h);
+
+    void computePressure(std::vector<Particle>& particles);
+    float spikyKernelGradient(float r, float h);
 
     
 

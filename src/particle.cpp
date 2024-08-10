@@ -30,6 +30,8 @@ void update_particle(std::vector<Particle>& particles, float dt)
 }
 //----------------------------- PRESSURE ----------------------------------------------------------
 
+
+
 //----------------------------- DENSITY ----------------------------------------------------------
 
 float poly6kernel(float h, float r)
