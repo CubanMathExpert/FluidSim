@@ -8,6 +8,57 @@
 
 float dragFactor = 0.999f;
 
+//------------------- UPDATE FULL SIM --------------------------------------------------------
+
+void update_simulation(std::vector<Particle>& particles, float dt)
+{
+    check_wall_collisions(particles, dt);
+    //update_particle(particles, dt);
+}
+
+void update_particle(std::vector<Particle>& particles, float dt)
+{
+    for (Particle& particle : particles)
+    {
+    // euler implicit method : xf = xi + v * deltaTime
+        particle.position = particle.position + particle.velocity * dt; // update the position
+        particle.velocity = particle.velocity + gravity * dt; 
+        //glm::vec2 pressure_force = calculate_pressure_force(particle, particles);
+        //glm::vec2 pressure_acceleration = pressure_force / particle.density;
+        //particle.velocity +=  pressure_acceleration * dt;
+    }
+}
+//----------------------------- PRESSURE ----------------------------------------------------------
+
+//----------------------------- DENSITY ----------------------------------------------------------
+
+float poly6kernel(float h, float r)
+{
+    float volume = 315 / (64 * PI * pow(h, 9));
+    float value = std::max(0.0f, h * h - r * r); // this ensures that if the distance of particles is higher than smoothing radius we return 0
+    return volume * pow(value, 3);
+}
+
+void computeDensity(std::vector<Particle>& particles)
+{
+    // we will not take into consideration the mass of the particles since we have assumed it is = 1
+    for (auto& p : particles)
+    {
+        float result = 0;
+        for (const auto& neighbor: particles)
+        {
+            if (&p != &neighbor)
+            {
+                float r = glm::length(neighbor.position - p.position);
+                result += poly6kernel(smoothing_radius, r);
+            }
+        }
+        p.density = result;
+    }
+}
+
+//---------------------------- CHECK COLLISIONS --------------------------------------------------------------------------
+
 void check_wall_collisions(std::vector<Particle>& particles, float deltaTime)
 {
 
@@ -50,24 +101,7 @@ void handle_collisions(std::vector<Particle>& particles)
 
 }
 
-void update_particle(std::vector<Particle>& particles, float dt)
-{
-    for (Particle& particle : particles)
-    {
-    // euler implicit method : xf = xi + v * deltaTime
-        particle.position = particle.position + particle.velocity * dt; // update the position
-        particle.velocity = particle.velocity + gravity * dt; 
-        //glm::vec2 pressure_force = calculate_pressure_force(particle, particles);
-        //glm::vec2 pressure_acceleration = pressure_force / particle.density;
-        //particle.velocity +=  pressure_acceleration * dt;
-    }
-}
 
-void update_simulation(std::vector<Particle>& particles, float dt)
-{
-    handle_collisions(particles);
-    //update_particle(particles, dt);
-}
 
 void initializeParticles(std::vector<Particle>& particles, int num_particles)
 {

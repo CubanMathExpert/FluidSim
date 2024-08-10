@@ -75,6 +75,15 @@ int main()
     initializeParticles(particles, num_particles);
 
     Grid my_grid;
+
+    // REMOVE ONCE PRESSURE AND DENSITY ARE WORKING
+    computeDensity(particles);
+    for (Particle& p : particles) 
+    {
+        std::cout << "density: "<< p.density<< " and " << "pressure: "<< p.pressure << std::endl;
+    }
+
+    
     
 
     // render loop
@@ -85,9 +94,7 @@ int main()
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        my_grid.update_grid(particles);
-        my_grid.set_neighbors(particles);
-        //my_grid.print_grid();
+
 
         // steps of the simulation
         update_simulation(particles, deltaTime);

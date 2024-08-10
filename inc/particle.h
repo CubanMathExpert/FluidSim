@@ -10,9 +10,9 @@
 
 const glm::vec2 gravity = glm::vec2(0.0f, -9.81f);
 #define PI 3.141592653589793f
-const float smoothing_radius = 0.03f;
+const float smoothing_radius = 0.5f;
 #define gravity glm::vec2(0.0f, -9.81f)
-const int num_particles = 10;
+const int num_particles = 1000;
 
 
 struct Particle
@@ -46,6 +46,11 @@ struct Particle
 
     // intial spawner
     void initializeParticles(std::vector<Particle>& particles, int num_particles);
+
+    // density
+    void computeDensity(std::vector<Particle>& particles);
+    float poly6kernel(float r, float d);
+
     
 
 
