@@ -13,24 +13,61 @@ float dragFactor = 0.999f;
 void update_simulation(std::vector<Particle>& particles, float dt)
 {
     check_wall_collisions(particles, dt);
-    //update_particle(particles, dt);
+    update_particle(particles, dt);
 }
 
 void update_particle(std::vector<Particle>& particles, float dt)
 {
+    // computing already done for each particle inside the loop
+    computeDensity(particles);
+    computePressure(particles);
+
+    // for each particle you wanna update position and acceleration with previously computed density and pressure
     for (Particle& particle : particles)
     {
     // euler implicit method : xf = xi + v * deltaTime
         particle.position = particle.position + particle.velocity * dt; // update the position
         particle.velocity = particle.velocity + gravity * dt; 
-        //glm::vec2 pressure_force = calculate_pressure_force(particle, particles);
-        //glm::vec2 pressure_acceleration = pressure_force / particle.density;
-        //particle.velocity +=  pressure_acceleration * dt;
+        glm::vec2 pressureForce = computePressureForce(particle, particles); // compute pressureForce on particle i
+        glm::vec2 totalAcceleration = pressureForce / particle.density;
+        particle.velocity +=  totalAcceleration * dt;
     }
 }
 //----------------------------- PRESSURE ----------------------------------------------------------
 
+float spikyKernelGradient(float h, float r)
+{
+    float volume = -45/(PI * pow(h, 6));
+    float value = std::max(0.0f, h - r);
+    return volume * pow(value, 2);
+}
 
+
+void computePressure(std::vector<Particle>& particles)
+{
+    // this is gonna be the k(pi - p0) equation
+    float k = 1.5f;
+    for (auto& p : particles)
+    {
+        p.pressure = std::max(k * (p.density - p.density0), 0.0f);
+    }
+}
+
+glm::vec2 computePressureForce(Particle p, std::vector<Particle>& particles)
+{
+    // p is gonna be particle i and the ones in loop are the j particles
+    glm::vec2 pressureForce = glm::vec2(0.0f, 0.0f); // init 
+    for (auto& neighbor : particles)
+    {
+        if (&p != &neighbor)
+        {
+            float r = glm::length(neighbor.position - p.position);
+            pressureForce += (1/neighbor.density) * ((p.pressure + neighbor.pressure) / 2) * spikyKernelGradient(smoothing_radius, r);
+        }
+    }
+    return -pressureForce;
+
+}
 
 //----------------------------- DENSITY ----------------------------------------------------------
 

@@ -77,11 +77,12 @@ int main()
     Grid my_grid;
 
     // REMOVE ONCE PRESSURE AND DENSITY ARE WORKING
-    computeDensity(particles);
-    for (Particle& p : particles) 
-    {
-        std::cout << "density: "<< p.density<< " and " << "pressure: "<< p.pressure << std::endl;
-    }
+    
+    
+    // for (Particle& p : particles) 
+    // {
+    //     std::cout << "density: "<< p.density<< " and " << "pressure: "<< p.pressure << std::endl;
+    // }
 
     
     
